@@ -1,8 +1,10 @@
 import express from 'express';
 import statusRout from './routes/status';
 import userRoute from './routes/userRout';
+import db from './db'
 const app = express();
 const port = 8081
+
 
 
 // Configurações para as rotas 
