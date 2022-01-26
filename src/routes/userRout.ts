@@ -11,21 +11,38 @@ userRoute.get('/users',async (req:Request,res:Response,next:NextFunction)=>{
     
 });
 
-userRoute.get('/users/:uuid',(req:Request<{uuid:String}>,res:Response,next:NextFunction)=>{
-    res.status(StatusCodes.OK).send(`usuario ${req.params.uuid}`)
+userRoute.get('/users/:uuid', async (req:Request<{uuid:String}>,res:Response,next:NextFunction)=>{
+    try{
+        const user = await UserRepositori.finduserbyid(req.params.uuid);
+        res.status(StatusCodes.OK).send(user)
+    }catch(error){
+        next(error)
+        
+
+    }
     
 });
 
-userRoute.post('/users',(req:Request,res:Response,next:NextFunction)=>{
+userRoute.post('/users',async (req:Request,res:Response,next:NextFunction)=>{
     console.log(req.body)
-    res.status(StatusCodes.CREATED).send(req.body)
+    const uuid = await UserRepositori.insernewuser(req.body);
+    res.status(StatusCodes.CREATED).send(uuid)
 });
 
-userRoute.put('/users/:uuid',(req:Request<{uuid:String}>,res:Response,next:NextFunction)=>{
+userRoute.put('/users/:uuid',async (req:Request<{uuid:String}>,res:Response,next:NextFunction)=>{
+    const uuid = req.params.uuid
+    const modifyuser = req.body
+    modifyuser.uuid = uuid
+    await UserRepositori.updateuser(modifyuser);
+    res.status(StatusCodes.OK).send('sucess')
 
 });
 
-userRoute.delete('/users//:uuid',(req:Request,res:Response,next:NextFunction)=>{
+userRoute.delete('/users/:uuid',async (req:Request<{uuid:String}>,res:Response,next:NextFunction)=>{
+    const uuid = req.params.uuid
+   await UserRepositori.deleteuser(uuid)
+   res.status(200).send("sucess")
+    
 
 });
 

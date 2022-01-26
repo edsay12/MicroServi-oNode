@@ -3,7 +3,7 @@
 
 type User = {
     uuid?:string,
-    username:string,
+    user_name:string,
     password:string
 
 
