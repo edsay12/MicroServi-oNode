@@ -9,15 +9,12 @@ class UserRepositori{
     async findusers():Promise<User[]>{
         const query = 'SELECT uuid,user_name FROM app_user'
         try{
-
             const {rows} = await db.query<User>(query);
             return rows || [];
         }catch(error){
            throw new DatabaseError('Erro na consulta por id',error)
-
         }
     }
-
     async finduserbyid(id:String):Promise<User[]>{
         const query = `SELECT uuid,user_name from app_user where uuid = $1`
         const values = [id];
