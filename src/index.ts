@@ -3,6 +3,7 @@ import statusRout from './routes/status';
 import userRoute from './routes/userRout';
 import errorhandle from './middlewares/errorHandleMiddleware';
 import autoriza from './routes/autorizaRout';
+import AuthenticationMiddleware from './middlewares/BeaderAuthenticationMiddleware';
 const app = express();
 const port = 8081
 
@@ -14,7 +15,7 @@ app.use(express.urlencoded({extended:true}));
 
 //Rotas 
 
-app.use(userRoute)
+app.use(AuthenticationMiddleware,userRoute)
 app.use(statusRout)
 app.use(autoriza)
 
