@@ -1,35 +1,31 @@
 import { NextFunction, Request, Response, Router } from "express";
 import { buffer } from "stream/consumers";
 import ForbittenErrorRout from "../models/errors/ForbittenErrorRout";
+import UserRepositori from "../repositories/UserRepositori";
+import jsonwebtoken from "jsonwebtoken";
+import { DatabaseError } from "pg";
+import { StatusCodes } from "http-status-codes";
+import basicAuthenticationMiddleware from "../middlewares/BasicAuthenticationMiddleware";
 const autoriza = Router();
-autoriza.post('/token',(req:Request,res:Response,next:NextFunction)=>{
-    const autorizaHeader = req.headers['authorization'];
-    console.log(autorizaHeader)
-    try{
-        if(!autorizaHeader){
-            console.log('deu erro')   
-            throw new ForbittenErrorRout('Cledenciais nao informadas')
-        }else{
-            const [type,token] = autorizaHeader.split(' ')
-            if(type !== 'Basic' || !token){
-                throw new ForbittenErrorRout('tipo de authenticação invalida');
-            }
-            const tokencontent =  Buffer.from(token,'base64').toString('utf-8')
-            const [username,password] =  tokencontent.split(':');
-            if(!username || !password){
-                throw new ForbittenErrorRout("Cledenciais nao preenchidas");
-                
-            }
-    
-            
-            console.log(tokencontent)
+
+autoriza.post('/token', basicAuthenticationMiddleware, async (req: Request, res: Response, next: NextFunction) => {
+
+    try {
+
+        const user = req.user
+        if(!user){
+            throw new ForbittenErrorRout('Usuario nao informado');
             
         }
-        
-    }catch(error){
-        next(error)
+        const payload = { username: user.user_name }
+        const secretKey = 'my_secret_key'
+        const options = { subject: user?.uuid }
+        const jwt = jsonwebtoken.sign(payload, secretKey, options)
+        res.status(StatusCodes.OK).json({ token: jwt })
+    }catch (error) {
+    next(error)
 
-    }
+}
     
 })
 export default autoriza

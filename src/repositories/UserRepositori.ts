@@ -67,6 +67,24 @@ class UserRepositori{
 
 
     }
+    async findUserBynameAndPassword(name:String,password:String): Promise<User | null>{
+        
+        const query = `SELECT uuid,user_name
+         FROM app_user WHERE
+         user_name = $1 and password = crypt($2,'my_salt')`
+         try{
+
+             const values = [name,password]
+                const {rows} = await db.query<User>(query,values)
+                const [user] = rows
+                return !user ? null : user
+         }catch(error){
+            new DatabaseError('erro de consulta de senha e palavra passe',error)
+            return null
+             
+         }
+ 
+    }
     
 }
 
